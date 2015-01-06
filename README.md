@@ -1,4 +1,2 @@
-activator-akka-scala-seed
-=========================
-
-A minimal seed template for an Akka with Scala build 
+A simple web crawler using scala and Akka actors.
+ 
