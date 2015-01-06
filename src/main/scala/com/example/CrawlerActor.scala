@@ -10,7 +10,7 @@ class CrawlerActor extends Actor with ActorLogging {
   	case Crawl(url) =>
 	    log.info("Crawling url: {}", url)
       val source = Source.fromURL(url, "ISO-8859-1").mkString
-      sender ! ControllerActor.Process(source)
+      sender ! ControllerActor.Process(url, source)
   }
 }
 
@@ -21,16 +21,17 @@ object CrawlerActor {
 
 class IndexerActor extends Actor with ActorLogging {
   import IndexerActor._
-  
+
   def receive = {
-    case Index(source) =>
+    case Index(url, source) =>
+      log.info("Indexing {}", url)
       log.info(source)
   }
 }
 
 object IndexerActor {
   val props = Props[IndexerActor]
-  case class Index(source: String)
+  case class Index(url: String, source: String)
 }
 
 class ControllerActor extends Actor with ActorLogging {
@@ -48,16 +49,18 @@ class ControllerActor extends Actor with ActorLogging {
           crawlerActor ! CrawlerActor.Crawl(head)
           self ! ControllerActor.Initialize(rest)
         }
-        case Nil => log.info("End of list.")
+        case Nil => {
+          log.info("End of list.")
+        }
       }
-    case Process(source) =>
+    case Process(url, source) =>
       val indexerActor = system.actorOf(IndexerActor.props, "indexerActor")
-      indexerActor ! IndexerActor.Index(source)
+      indexerActor ! IndexerActor.Index(url, source)
   }
 }
 
 object ControllerActor {
   val props = Props[ControllerActor]
   case class Initialize(urls: List[String])
-  case class Process(source: String)
+  case class Process(url: String, source: String)
 }
