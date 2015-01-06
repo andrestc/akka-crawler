@@ -4,9 +4,10 @@ import akka.actor.ActorSystem
 
 object ApplicationMain extends App {
   val system = ActorSystem("MyActorSystem")
-  val crawlerActor = system.actorOf(CrawlerActor.props, "crawlerActor")
-  crawlerActor ! CrawlerActor.Crawl("http://www.google.com")
-  // This example app will ping pong 3 times and thereafter terminate the ActorSystem -
-  // see counter logic in PingActor
+  val controllerActor = system.actorOf(ControllerActor.props, "controllerAtor")
+
+  val seeds: List[String] = List("http://www.google.com", "http://www.google.com/1")
+
+  controllerActor ! ControllerActor.Initialize(seeds)
   system.awaitTermination()
 }
