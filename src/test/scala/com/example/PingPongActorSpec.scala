@@ -18,7 +18,7 @@ class CrawlerActorSpec(_system: ActorSystem) extends TestKit(_system) with Impli
   }
 
   "A Crawler actor" must {
-    "send back a ping on a pong" in {
+    "visit" in {
       val pingActor = system.actorOf(PingActor.props)
       pingActor ! PongActor.PongMessage("pong")
       expectMsg(PingActor.PingMessage("ping"))
